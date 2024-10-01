@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Media App</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Create a Post</h1>
+        <form action="/create-post" method="POST">
+            <input type="text" name="post_link" placeholder="Post Link" required><br></br>
+            <textarea name="description" placeholder="Description" required></textarea><br></br>
+            <button type="submit">Create Post</button>
+        </form>
+
+        <h2>Recent Posts</h2>
+        <div class="posts">
+            <% posts.forEach(post => { %>
+                <div class="post" id="post-<%= post.id %>">
+                    <p><strong>Link:</strong> <a href="<%= post.post_link %>"><%= post.post_link %></a></p>
+                    <p><%= post.description %></p>
+                    
+                    <!-- Comment button -->
+                    <button class="comment-btn" data-post-id="<%= post.id %>">Comment</button>
+                    
+                    <!-- Comment form, hidden initially -->
+                    <div class="comment-section" id="comment-section-<%= post.id %>" style="display: none;">
+                        <input type="text" class="comment-input" id="comment-input-<%= post.id %>" placeholder="Write a comment">
+                        <button class="send-comment-btn" data-post-id="<%= post.id %>">Send</button>
+                    </div>
+
+                    <!-- Displaying comments -->
+                    <div class="comments" id="comments-<%= post.id %>"></div>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+
+    <script>
+        // Toggle comment input field visibility
+        document.querySelectorAll('.comment-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const postId = this.getAttribute('data-post-id');
+                const commentSection = document.getElementById('comment-section-' + postId);
+                commentSection.style.display = commentSection.style.display === 'none' ? 'block' : 'none';
+            });
+        });
+
+        // Handle comment submission
+        document.querySelectorAll('.send-comment-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const postId = this.getAttribute('data-post-id');
+                const commentInput = document.getElementById('comment-input-' + postId);
+                const comment = commentInput.value;
+
+                if (comment.trim() !== '') {
+                    // Append comment to the comments section
+                    const commentSection = document.getElementById('comments-' + postId);
+                    const newComment = document.createElement('p');
+                    newComment.innerText = comment;
+                    commentSection.appendChild(newComment);
+
+                    // Clear the input field
+                    commentInput.value = '';
+
+                    // Hide comment section after sending
+                    document.getElementById('comment-section-' + postId).style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
